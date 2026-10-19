@@ -1,0 +1,103 @@
+%% ============================================================
+%% Practice02/chat.py 代码架构图
+%% 纯文本 Mermaid 文件，可用 VS Code Mermaid 插件或
+%% https://mermaid.live 打开渲染
+%% ============================================================
+flowchart TD
+
+    subgraph ENTRY["程序入口"]
+        CONFIG_FILE[("config.ini<br/>base_url / api_key / model")]
+        LOADCFG["load_config()<br/>从脚本目录逐级向上查找配置"]
+        MAIN["main()"]
+        CONFIG_FILE --> LOADCFG
+        LOADCFG --> MAIN
+    end
+
+    subgraph CHAT["对话主循环"]
+        INPUT["input()<br/>读取用户问题"]
+        MESSAGES["messages 对话历史<br/>system / user / assistant / tool"]
+        STREAM["stream_completion()<br/>发起请求并解析 SSE 流"]
+        HAS_TOOL{"存在 tool_calls ?"}
+        REPLY["打印模型最终回答"]
+    end
+
+    subgraph SCHEMA["提示词与工具声明"]
+        SYS_PROMPT["SYSTEM_PROMPT<br/>约束模型优先使用工具"]
+        TOOLS_DEF["TOOLS<br/>Function Calling JSON Schema"]
+    end
+
+    LLM[("LLM API<br/>OpenAI 兼容接口")]
+
+    subgraph DISPATCH["工具调度层"]
+        APPEND_A["追加 assistant 消息<br/>content + tool_calls"]
+        CALL_TOOL["call_tool(name, arguments)<br/>按工具名分发"]
+        APPEND_R["追加 role=tool 消息<br/>工具执行结果"]
+    end
+
+    subgraph TOOLS["本地工具实现"]
+        subgraph TIME_CALC["时间与计算"]
+            GETDATE["getdate()"]
+            LEAPYEAR["isLeapYear()"]
+            LEAPFN["is_leap_year()<br/>Python 计算闰年"]
+            DATE_CMD["subprocess 调用本地 date 命令<br/>PATH 中的 date / Git date.exe / bash -c date"]
+            GETDATE --> DATE_CMD
+            LEAPYEAR --> LEAPFN
+        end
+
+        subgraph FILE_OPS["文件操作"]
+            GETCWD["getcwd()<br/>当前工作目录"]
+            LISTDIR["listDirectory()<br/>列出目录内容"]
+            FILETYPE["getFileType()<br/>mimetypes 判断类型"]
+            READTEXT["readTextFile()<br/>仅纯文本，UTF-8/GBK，200KB 截断"]
+            MKDIR["createDirectory()<br/>mkdir(parents=True)"]
+            RENAME["renamePath()<br/>重命名/移动，拒绝覆盖"]
+            RMDIR["deleteDirectory()<br/>删除非空目录"]
+            RMFILE["deleteFile()<br/>删除文件"]
+        end
+    end
+
+    CONFIRM["_confirm()<br/>删除前请求用户确认"]
+    FS[("本地文件系统")]
+
+    MAIN --> SYS_PROMPT
+    MAIN --> TOOLS_DEF
+    MAIN -->|"初始化 system 消息"| MESSAGES
+    MAIN --> INPUT
+    INPUT -->|"追加 user 消息"| MESSAGES
+    MESSAGES -->|"messages + tools"| STREAM
+    SYS_PROMPT -.-> STREAM
+    TOOLS_DEF -.-> STREAM
+    STREAM <-->|"HTTP POST /chat/completions<br/>stream=true（SSE）"| LLM
+    STREAM --> HAS_TOOL
+
+    HAS_TOOL -->|"否"| REPLY
+    REPLY --> INPUT
+    HAS_TOOL -->|"是"| APPEND_A
+    APPEND_A --> CALL_TOOL
+
+    CALL_TOOL --> GETDATE
+    CALL_TOOL --> LEAPYEAR
+    CALL_TOOL --> GETCWD
+    CALL_TOOL --> LISTDIR
+    CALL_TOOL --> FILETYPE
+    CALL_TOOL --> READTEXT
+    CALL_TOOL --> MKDIR
+    CALL_TOOL --> RENAME
+    CALL_TOOL --> RMDIR
+    CALL_TOOL --> RMFILE
+
+    DATE_CMD -->|"日期时间字符串"| APPEND_R
+    LEAPFN -->|"闰年判断结果"| APPEND_R
+
+    GETCWD --> FS
+    LISTDIR --> FS
+    FILETYPE --> FS
+    READTEXT --> FS
+    MKDIR --> FS
+    RENAME --> FS
+    RMDIR --> CONFIRM
+    RMFILE --> CONFIRM
+    CONFIRM -->|"用户输入 y 后 rmtree / unlink"| FS
+
+    FS -->|"目录结构、文件类型或文本内容"| APPEND_R
+    APPEND_R -->|"进入下一轮请求"| STREAM
