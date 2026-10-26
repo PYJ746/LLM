@@ -1,0 +1,50 @@
+%% ============================================================
+%% Pulse 分层架构图
+%% 纯文本 Mermaid 文件，可用 VS Code Mermaid 插件或
+%% https://mermaid.live 打开渲染
+%% ============================================================
+flowchart TD
+
+    subgraph UI["前端层（可替换）"]
+        TUI["tui/<br/>Textual App + Widgets"]
+        FUTURE["未来：web/ desktop/ mobile/"]
+    end
+
+    subgraph CORE["core/（UI 无关）"]
+        ENGINE["AgentEngine.run_turn()<br/>事件流"]
+        EVENTS["events.py<br/>TurnStarted / TextDelta /<br/>ToolCall* / Error / TurnFinished"]
+        SESSION["Conversation<br/>消息历史"]
+        LLM["ChatModel 协议<br/>OpenAIChatClient（httpx SSE）"]
+        REGISTRY["ToolRegistry<br/>schema 导出 + 异常归一"]
+        TOOLS["builtin 工具<br/>时间 / 文件系统"]
+        CONFIRM["ConfirmationProvider 协议"]
+        CONFIG["PulseConfig<br/>config.ini"]
+    end
+
+    LLMAPI[("LLM API<br/>OpenAI 兼容")]
+    FS[("本地文件系统")]
+    USER(["用户"])
+
+    USER --> TUI
+    USER -.-> FUTURE
+    TUI -->|"run_turn(user_text)"| ENGINE
+    FUTURE -.->|"同一接口"| ENGINE
+    ENGINE --> EVENTS
+    EVENTS -->|"渲染"| TUI
+    EVENTS -.->|"渲染"| FUTURE
+    ENGINE --> SESSION
+    ENGINE --> LLM
+    ENGINE --> REGISTRY
+    LLM <-->|"SSE /chat/completions"| LLMAPI
+    REGISTRY --> TOOLS
+    TOOLS --> FS
+    TOOLS -->|"删除前确认"| CONFIRM
+    CONFIRM -.->|"TUI: ModalScreen<br/>Web: WebSocket"| UI
+    CONFIG --> ENGINE
+
+    classDef ui fill:#1b2635,stroke:#4d8dff,color:#e6e6e6
+    classDef core fill:#151a21,stroke:#3a4152,color:#e6e6e6
+    classDef ext fill:#121720,stroke:#7ee2a8,color:#e6e6e6
+    class TUI,FUTURE ui
+    class ENGINE,EVENTS,SESSION,LLM,REGISTRY,TOOLS,CONFIRM,CONFIG core
+    class LLMAPI,FS,USER ext
