@@ -1,0 +1,295 @@
+/* Pulse TUI 样式：聊天流 + 会话侧栏 */
+
+Screen {
+    background: #0b1016;
+    color: #d7dde8;
+}
+
+Header {
+    height: 1;
+    background: #0b1118;
+    color: #c7d2e0;
+}
+
+Header .header--title {
+    color: #e2e8f0;
+    text-style: bold;
+}
+
+#body {
+    height: 1fr;
+}
+
+#main-column {
+    width: 1fr;
+    height: 1fr;
+}
+
+/* ---------------------------------------------------------------- */
+/* 顶部信息卡                                                        */
+/* ---------------------------------------------------------------- */
+
+InfoPanel {
+    height: auto;
+    margin: 1 1 0 1;
+    padding: 0 1;
+    background: #0d151f;
+    border: heavy #2563eb;
+}
+
+.info-title {
+    height: 1;
+    color: #e2e8f0;
+    text-style: bold;
+}
+
+.info-path {
+    height: 1;
+    color: #8fa3bf;
+}
+
+.info-keys {
+    height: 1;
+    color: #6b7f99;
+}
+
+/* ---------------------------------------------------------------- */
+/* 聊天流                                                            */
+/* ---------------------------------------------------------------- */
+
+ChatView {
+    height: 1fr;
+    padding: 1 1 0 1;
+    scrollbar-gutter: stable;
+}
+
+.message {
+    height: auto;
+    margin-bottom: 1;
+    padding-right: 1;
+}
+
+.user-message {
+    border-left: wide #f59e0b;
+    padding-left: 1;
+}
+
+.assistant-message {
+    border-left: wide #3b82f6;
+    padding-left: 1;
+}
+
+.role-label {
+    height: 1;
+    text-style: bold;
+}
+
+.user-message .role-label {
+    color: #fbbf24;
+}
+
+.assistant-message .role-label {
+    color: #60a5fa;
+}
+
+.bubble {
+    height: auto;
+    padding: 1;
+    background: #141b24;
+}
+
+.user-bubble {
+    background: #1a222c;
+}
+
+.assistant-bubble {
+    background: transparent;
+    padding: 1 0;
+}
+
+.message-status {
+    height: 1;
+    color: #6f7a8f;
+}
+
+ToolCard {
+    height: auto;
+    margin: 0 0 1 0;
+    padding: 0 1;
+    background: #10161d;
+    border: none;
+    border-left: wide #22c55e;
+}
+
+ToolCard CollapsibleTitle {
+    background: #10161d;
+    color: #86efac;
+    text-style: bold;
+}
+
+.tool-body {
+    height: auto;
+    padding: 0 1 1 1;
+}
+
+.tool-section-label {
+    height: 1;
+    color: #64748b;
+    text-style: bold;
+}
+
+.tool-args {
+    height: auto;
+    color: #a5b4c8;
+}
+
+.tool-result {
+    height: auto;
+    color: #d7dde8;
+}
+
+.error-message {
+    height: auto;
+    padding: 1;
+    margin-bottom: 1;
+    color: #fda4af;
+    background: #2a1418;
+    border-left: wide #ef4444;
+}
+
+.system-notice {
+    height: auto;
+    padding: 1;
+    margin-bottom: 1;
+    color: #9fb3c8;
+    background: #121b26;
+    border-left: wide #475569;
+}
+
+/* ---------------------------------------------------------------- */
+/* 右侧栏                                                            */
+/* ---------------------------------------------------------------- */
+
+SessionSidebar {
+    width: 38;
+    height: 1fr;
+    padding: 1;
+    background: #0c1219;
+    border-left: solid #1e293b;
+    scrollbar-gutter: stable;
+}
+
+.sidebar-heading {
+    height: 1;
+    margin-bottom: 0;
+    color: #93c5fd;
+    text-style: bold;
+}
+
+.tool-heading {
+    margin-top: 1;
+}
+
+.kv-row {
+    height: auto;
+}
+
+.kv-key {
+    width: 6;
+    color: #64748b;
+}
+
+.kv-value {
+    width: 1fr;
+    color: #cbd5e1;
+}
+
+.tool-name {
+    height: 1;
+    margin-top: 1;
+    color: #e2e8f0;
+    text-style: bold;
+}
+
+.tool-desc {
+    height: auto;
+    color: #64748b;
+}
+
+/* ---------------------------------------------------------------- */
+/* 输入框、状态栏、页脚                                              */
+/* ---------------------------------------------------------------- */
+
+PromptInput {
+    height: 3;
+    margin: 0 1;
+    padding: 0 1;
+    background: #0d151f;
+    border: heavy #2563eb;
+    color: #e2e8f0;
+}
+
+PromptInput:focus {
+    border: heavy #3b82f6;
+}
+
+StatusBar {
+    height: 1;
+    padding: 0 1;
+    background: #0a0f15;
+    color: #94a3b8;
+}
+
+Footer {
+    height: 1;
+    background: #0f1720;
+    color: #94a3b8;
+}
+
+Footer > .footer--key {
+    background: #1e293b;
+    color: #e2e8f0;
+}
+
+Footer > .footer--description {
+    color: #94a3b8;
+}
+
+/* ---------------------------------------------------------------- */
+/* 确认弹窗                                                          */
+/* ---------------------------------------------------------------- */
+
+ConfirmScreen {
+    align: center middle;
+    background: #000000 65%;
+}
+
+.confirm-dialog {
+    width: 64;
+    height: auto;
+    padding: 1 2;
+    background: #121a24;
+    border: heavy #b91c1c;
+}
+
+.confirm-title {
+    height: 1;
+    margin-bottom: 1;
+    color: #fbbf24;
+    text-style: bold;
+}
+
+.confirm-body {
+    height: auto;
+    margin-bottom: 1;
+    color: #d7dde8;
+}
+
+.confirm-buttons {
+    height: auto;
+    align-horizontal: right;
+}
+
+.confirm-buttons Button {
+    margin-left: 1;
+}

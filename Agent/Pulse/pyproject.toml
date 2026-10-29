@@ -1,0 +1,33 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pulse-agent"
+version = "0.1.0"
+description = "分层架构的本地 Agent：UI 无关 core + Textual TUI"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "httpx>=0.28,<0.29",
+    "textual>=8,<9",
+    "trafilatura>=2.3,<3",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "pytest-asyncio>=1.0",
+]
+
+[project.scripts]
+pulse = "tui.__main__:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["core", "tui"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+addopts = "-q"
